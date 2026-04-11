@@ -1,0 +1,10 @@
+# Build artifacts
+*.o
+moc_*.cpp
+moc_predefs.h
+.qmake.stash
+TcpCommandServer
+Makefile
+compile_commands.json
+.cache/
+.null-ls_*
