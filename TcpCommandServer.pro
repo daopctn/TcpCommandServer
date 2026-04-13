@@ -7,8 +7,11 @@ CONFIG   -= app_bundle
 TARGET = TcpCommandServer
 TEMPLATE = app
 
-SOURCES += main.cpp \
-           commandserver.cpp
+INCLUDEPATH += src
 
-HEADERS += commandserver.h \
-           protocol.h
+SOURCES += src/main.cpp \
+           src/commandserver.cpp
+
+HEADERS += src/commandserver.h \
+           src/protocol.h \
+           src/config.h

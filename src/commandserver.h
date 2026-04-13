@@ -2,6 +2,7 @@
 #define COMMANDSERVER_H
 
 #include <QObject>
+#include "config.h"
 
 class QTcpServer;
 class QTcpSocket;
@@ -23,6 +24,9 @@ private:
 
     QTcpServer *m_server;
     QTcpSocket *m_client;
+    quint16     m_angle      = 0;
+    quint16     m_videoValue = 0;
+    Config      m_config;
 };
 
 #endif // COMMANDSERVER_H

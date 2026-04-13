@@ -1,10 +1,26 @@
 # Build artifacts
 *.o
+*.a
 moc_*.cpp
 moc_predefs.h
+qrc_*.cpp
+ui_*.h
 .qmake.stash
-TcpCommandServer
 Makefile
 compile_commands.json
+
+# Build directories
+build/
+debug/
+release/
+
+# Binaries
+TcpCommandServer
+
+# IDE files
 .cache/
 .null-ls_*
+.idea/
+.vscode/
+*.user
+*.pro.user*
