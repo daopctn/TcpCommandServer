@@ -27,6 +27,9 @@ struct Config {
     // Video2
     Range video2_header, video2_header_step, video2_entry, video2_entry_count;
 
+    // Streaming interval between messages (milliseconds)
+    int stream_interval_ms = 100;
+
     static Range readRange(const QJsonObject &obj, const QString &key)
     {
         QJsonObject r = obj[key].toObject();
@@ -80,6 +83,9 @@ struct Config {
         video2_header_step = readRange(video2, "header_step");
         video2_entry       = readRange(video2, "entry");
         video2_entry_count = readRange(video2, "entry_count");
+
+        if (root.contains("stream_interval_ms"))
+            stream_interval_ms = root["stream_interval_ms"].toInt(stream_interval_ms);
 
         qDebug() << "[CONFIG] Loaded from" << path;
         return true;

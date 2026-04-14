@@ -3,6 +3,7 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTimer>
 #include <QDebug>
 
 #include <cstdlib>  // rand, srand
@@ -12,14 +13,19 @@ StreamServer::StreamServer(QObject *parent)
     : QObject(parent)
     , m_server(new QTcpServer(this))
     , m_client(nullptr)
+    , m_streamTimer(new QTimer(this))
 {
     srand(static_cast<unsigned>(time(nullptr)));
     m_config.load("config.json");
 
+    m_streamTimer->setInterval(m_config.stream_interval_ms);
+    connect(m_streamTimer, &QTimer::timeout, this, &StreamServer::sendRandomMessage);
+
     connect(m_server, &QTcpServer::newConnection, this, &StreamServer::onNewConnection);
 
     if (m_server->listen(QHostAddress::LocalHost, 9999)) {
-        qDebug() << "[SERVER] Listening on localhost:9999 — waiting for client...";
+        qDebug() << "[SERVER] Listening on localhost:9999 — waiting for client..."
+                 << "(stream interval:" << m_config.stream_interval_ms << "ms)";
     } else {
         qCritical() << "[SERVER] Failed to bind port 9999:" << m_server->errorString();
     }
@@ -38,11 +44,15 @@ void StreamServer::onNewConnection()
     connect(m_client, &QTcpSocket::disconnected, this, &StreamServer::onClientDisconnected);
 
     m_server->pauseAccepting();  // block new connections while client is connected
-    sendRandomMessage();        // send once on connect
+    sendRandomMessage();         // send immediately on connect
+    m_streamTimer->start();      // then stream continuously
 }
 
 void StreamServer::sendRandomMessage()
 {
+    if (!m_client || m_client->state() != QAbstractSocket::ConnectedState)
+        return;
+
     QByteArray frame;
     int type = rand() % 5;
 
@@ -125,6 +135,7 @@ void StreamServer::onClientData()
 void StreamServer::onClientDisconnected()
 {
     qDebug() << "[SERVER] Client disconnected.";
+    m_streamTimer->stop();
     m_client->deleteLater();
     m_client = nullptr;
     m_server->resumeAccepting();  // allow next connection

@@ -6,6 +6,7 @@
 
 class QTcpServer;
 class QTcpSocket;
+class QTimer;
 
 class StreamServer : public QObject
 {
@@ -24,6 +25,7 @@ private:
 
     QTcpServer *m_server;
     QTcpSocket *m_client;
+    QTimer     *m_streamTimer;
     quint16     m_angle      = 0;
     quint16     m_videoValue = 0;
     Config      m_config;

@@ -31,5 +31,6 @@
         "header_step": { "min": 1, "max": 100 },
         "entry":       { "min": 0, "max": 16777215 },
         "entry_count": { "min": 1, "max": 20 }
-    }
+    },
+    "stream_interval_ms": 100
 }
