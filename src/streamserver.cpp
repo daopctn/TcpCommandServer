@@ -1,4 +1,4 @@
-#include "commandserver.h"
+#include "streamserver.h"
 #include "protocol.h"
 
 #include <QTcpServer>
@@ -8,7 +8,7 @@
 #include <cstdlib>  // rand, srand
 #include <ctime>    // time
 
-CommandServer::CommandServer(QObject *parent)
+StreamServer::StreamServer(QObject *parent)
     : QObject(parent)
     , m_server(new QTcpServer(this))
     , m_client(nullptr)
@@ -16,7 +16,7 @@ CommandServer::CommandServer(QObject *parent)
     srand(static_cast<unsigned>(time(nullptr)));
     m_config.load("config.json");
 
-    connect(m_server, &QTcpServer::newConnection, this, &CommandServer::onNewConnection);
+    connect(m_server, &QTcpServer::newConnection, this, &StreamServer::onNewConnection);
 
     if (m_server->listen(QHostAddress::LocalHost, 9999)) {
         qDebug() << "[SERVER] Listening on localhost:9999 — waiting for client...";
@@ -27,21 +27,21 @@ CommandServer::CommandServer(QObject *parent)
 
 // ─── Connection handling ───────────────────────────────────────
 
-void CommandServer::onNewConnection()
+void StreamServer::onNewConnection()
 {
     m_client = m_server->nextPendingConnection();
     qDebug() << "[SERVER] Client connected from"
              << m_client->peerAddress().toString()
              << ":" << m_client->peerPort();
 
-    connect(m_client, &QTcpSocket::readyRead,    this, &CommandServer::onClientData);
-    connect(m_client, &QTcpSocket::disconnected, this, &CommandServer::onClientDisconnected);
+    connect(m_client, &QTcpSocket::readyRead,    this, &StreamServer::onClientData);
+    connect(m_client, &QTcpSocket::disconnected, this, &StreamServer::onClientDisconnected);
 
     m_server->pauseAccepting();  // block new connections while client is connected
     sendRandomMessage();        // send once on connect
 }
 
-void CommandServer::sendRandomMessage()
+void StreamServer::sendRandomMessage()
 {
     QByteArray frame;
     int type = rand() % 5;
@@ -116,13 +116,13 @@ void CommandServer::sendRandomMessage()
     m_client->flush();
 }
 
-void CommandServer::onClientData()
+void StreamServer::onClientData()
 {
     QByteArray data = m_client->readAll();
     qDebug() << "[CLIENT REPLY]" << data.size() << "bytes:" << data.toHex(' ');
 }
 
-void CommandServer::onClientDisconnected()
+void StreamServer::onClientDisconnected()
 {
     qDebug() << "[SERVER] Client disconnected.";
     m_client->deleteLater();

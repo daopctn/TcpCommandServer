@@ -1,5 +1,5 @@
-#ifndef COMMANDSERVER_H
-#define COMMANDSERVER_H
+#ifndef STREAMSERVER_H
+#define STREAMSERVER_H
 
 #include <QObject>
 #include "config.h"
@@ -7,12 +7,12 @@
 class QTcpServer;
 class QTcpSocket;
 
-class CommandServer : public QObject
+class StreamServer : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit CommandServer(QObject *parent = nullptr);
+    explicit StreamServer(QObject *parent = nullptr);
 
 private slots:
     void onNewConnection();
@@ -29,4 +29,4 @@ private:
     Config      m_config;
 };
 
-#endif // COMMANDSERVER_H
+#endif // STREAMSERVER_H
